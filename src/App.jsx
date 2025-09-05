@@ -5,13 +5,17 @@ import PageShell from "./components/layout/PageShell";
 import RestaurantGrid from "./components/restaurants/RestaurantGrid";
 import RestaurantCard from "./components/restaurants/RestaurantCard";
 import RestaurantForm from "./components/restaurants/RestaurantForm";
+import Pagination from "./components/layout/Pagination";
 const App = () => {
   const [data, setData] = useState([]);
   const [openForm, setOpenForm] = useState(false);
+  const [page, setPage] = useState(1);
 
   const fetchData = async () => {
     try {
-      const res = await api.get("/restaurants/");
+      const res = await api.get("/restaurants/", {
+        params: { page, size: 6 },
+      });
       setData(res.data || []);
     } catch (e) {
       console.error("Error fetching data", e);
@@ -20,7 +24,7 @@ const App = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page]);
 
   const handleDeleteFromList = (id) => {
     setData((prev) => prev.filter((r) => r.id !== id));
@@ -50,6 +54,7 @@ const App = () => {
             />
           ))}
         </RestaurantGrid>
+        <Pagination page={page} setPage={setPage} />
       </PageShell>
       {openForm && (
         <RestaurantForm
